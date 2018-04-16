@@ -41,7 +41,7 @@ function hash256(input) {
 }
 
 /**
- * Parses an URI
+ * Parses a URI
  * @author Steven Levithan <stevenlevithan.com> (MIT license)
  * https://github.com/get/parseuri
  */
@@ -77,7 +77,14 @@ function parseuri(str) {
 
 function getSignature(key, request, authorization) {
   var parts = parseuri(request.url);
-  return signHmac256(key, request.method + '\thttps\t' + parts.host + '\t' + parts.path + '\t\t' + hash256(request.body) + '\t' + authorization);
+
+  var value = request.method + '\thttps\t' + parts.host + '\t' + parts.path + '\t\t';
+  if (request.method === 'POST') {
+    value += hash256(request.body);
+  }
+  value += '\t' + authorization;
+
+  return signHmac256(key, value);
 }
 
 var AkamaiOpenEdgeGridAuthorization = function () {
