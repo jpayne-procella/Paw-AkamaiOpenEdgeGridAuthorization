@@ -77,8 +77,16 @@ function parseuri(str) {
 
 function getSignature(key, request, authorization) {
   var parts = parseuri(request.url);
+  
+  # if there's a query string we need to include that in the signature
+  
+  var path = parts.path
+  if (parts.query != '') {
+      path += '?' + parts.query
+  }
+  
 
-  var value = request.method + '\thttps\t' + parts.host + '\t' + parts.path + '\t\t';
+  var value = request.method + '\thttps\t' + parts.host + '\t' + path + '\t\t';
   if (request.method === 'POST') {
     value += hash256(request.body);
   }
